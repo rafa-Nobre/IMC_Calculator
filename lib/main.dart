@@ -10,6 +10,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Calculadora',
       theme: ThemeData(
         primarySwatch: Colors.green,
@@ -32,11 +33,33 @@ class _MyHomePageState extends State<MyHomePage> {
   TextEditingController heightFieldController = TextEditingController();
   String _resultText = '';
 
-  void _clearResult() {
+  void _calculateIMC() {
     setState(() {
-      weightFieldController.clear();
-      heightFieldController.clear();
-      _formController.currentState!.reset();
+      double weight = double.parse(weightFieldController.text);
+      double height = double.parse(heightFieldController.text) / 100;
+      double imcResult = weight / (height * height);
+
+      if (imcResult < 18.6) {
+        _resultText = "Abaixo do peso (${imcResult.toStringAsPrecision(4)})";
+      } else if (imcResult >= 18.6 && imcResult < 24.9) {
+        _resultText = "Peso ideal (${imcResult.toStringAsPrecision(4)})";
+      } else if (imcResult >= 24.9 && imcResult < 29.9) {
+        _resultText = "Levemente acima do peso (${imcResult.toStringAsPrecision(4)})";
+      } else if (imcResult >= 29.9 && imcResult < 34.9) {
+        _resultText = "Obesidade Grau I (${imcResult.toStringAsPrecision(4)})";
+      } else if (imcResult >= 34.9 && imcResult < 39.9) {
+        _resultText = "Obesidade Grau II (${imcResult.toStringAsPrecision(4)})";
+      } else if (imcResult >= 40) {
+        _resultText = "Obesidade Grau III (${imcResult.toStringAsPrecision(4)})";
+      }
+    });
+  }
+
+  void _clearResult() {
+    _formController.currentState!.reset();
+    weightFieldController.clear();
+    heightFieldController.clear();
+    setState(() {
       _resultText = '';
     });
   }
@@ -52,19 +75,62 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
       body: SingleChildScrollView(
-        child: Form(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              const Icon(
-                Icons.person,
-                size: 200,
-                color: Colors.brown,
-              ),
-              Text(
-                _resultText,
-              ),
-            ],
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Form(
+            key: _formController,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                const Icon(
+                  Icons.person,
+                  size: 200,
+                  color: Colors.brown,
+                ),
+                TextFormField(
+                  controller: weightFieldController,
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Campo obrigatório';
+                    } else {
+                      return null;
+                    }
+                  },
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(label: Text('Peso(Kg)')),
+                  style: TextStyle(
+                    color: Colors.green[900],
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8.0),
+                TextFormField(
+                  controller: heightFieldController,
+                  validator: (value) {
+                    if (value!.isEmpty) {
+                      return 'Campo obrigatório';
+                    } else {
+                      return null;
+                    }
+                  },
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(label: Text('Altura(cm)')),
+                  style: TextStyle(
+                    color: Colors.green[900],
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16.0),
+                ElevatedButton(
+                    onPressed: () {
+                      if (_formController.currentState!.validate()) _calculateIMC();
+                    },
+                    child: const Text('Calcular')),
+                Text(
+                  _resultText,
+                ),
+              ],
+            ),
           ),
         ),
       ),
