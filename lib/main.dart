@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:imc_calculator/screens/result_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -31,37 +32,47 @@ class _MyHomePageState extends State<MyHomePage> {
   final GlobalKey<FormState> _formController = GlobalKey<FormState>();
   TextEditingController weightFieldController = TextEditingController();
   TextEditingController heightFieldController = TextEditingController();
+
   String _resultText = '';
+  String _resultImage = '';
 
   void _calculateIMC() {
-    setState(() {
-      double weight = double.parse(weightFieldController.text);
-      double height = double.parse(heightFieldController.text) / 100;
-      double imcResult = weight / (height * height);
+    double weight = double.parse(weightFieldController.text);
+    double height = double.parse(heightFieldController.text);
+    double imcResult = weight / (height * height);
 
-      if (imcResult < 18.6) {
-        _resultText = "Abaixo do peso (${imcResult.toStringAsPrecision(4)})";
-      } else if (imcResult >= 18.6 && imcResult < 24.9) {
-        _resultText = "Peso ideal (${imcResult.toStringAsPrecision(4)})";
-      } else if (imcResult >= 24.9 && imcResult < 29.9) {
-        _resultText = "Levemente acima do peso (${imcResult.toStringAsPrecision(4)})";
-      } else if (imcResult >= 29.9 && imcResult < 34.9) {
-        _resultText = "Obesidade Grau I (${imcResult.toStringAsPrecision(4)})";
-      } else if (imcResult >= 34.9 && imcResult < 39.9) {
-        _resultText = "Obesidade Grau II (${imcResult.toStringAsPrecision(4)})";
-      } else if (imcResult >= 40) {
-        _resultText = "Obesidade Grau III (${imcResult.toStringAsPrecision(4)})";
-      }
-    });
+    if (imcResult < 18.6) {
+      _resultText = "Abaixo do peso (${imcResult.toStringAsPrecision(4)})";
+      _resultImage = 'assets/images/thin_figure.png';
+    } else if (imcResult >= 18.6 && imcResult < 24.9) {
+      _resultText = "Peso ideal (${imcResult.toStringAsPrecision(4)})";
+      _resultImage = 'assets/images/normal_figure.jpg';
+    } else if (imcResult >= 24.9 && imcResult < 29.9) {
+      _resultText = "Levemente acima do peso (${imcResult.toStringAsPrecision(4)})";
+      _resultImage = 'assets/images/normal_figure.jpg';
+    } else if (imcResult >= 29.9 && imcResult < 34.9) {
+      _resultText = "Obesidade Grau I (${imcResult.toStringAsPrecision(4)})";
+      _resultImage = 'assets/images/fat_figure.png';
+    } else if (imcResult >= 34.9 && imcResult < 39.9) {
+      _resultText = "Obesidade Grau II (${imcResult.toStringAsPrecision(4)})";
+      _resultImage = 'assets/images/fat_figure.png';
+    } else if (imcResult >= 40) {
+      _resultText = "Obesidade Grau III (${imcResult.toStringAsPrecision(4)})";
+      _resultImage = 'assets/images/fat_figure.png';
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ResultScreen(resultText: _resultText, image: _resultImage),
+      ),
+    );
   }
 
   void _clearResult() {
     _formController.currentState!.reset();
     weightFieldController.clear();
     heightFieldController.clear();
-    setState(() {
-      _resultText = '';
-    });
   }
 
   @override
@@ -122,12 +133,10 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 const SizedBox(height: 16.0),
                 ElevatedButton(
-                    onPressed: () {
-                      if (_formController.currentState!.validate()) _calculateIMC();
-                    },
-                    child: const Text('Calcular')),
-                Text(
-                  _resultText,
+                  onPressed: () {
+                    if (_formController.currentState!.validate()) _calculateIMC();
+                  },
+                  child: const Text('Calcular'),
                 ),
               ],
             ),
