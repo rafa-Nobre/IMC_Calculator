@@ -11,7 +11,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Calculadora',
+      title: 'IMC Calculator',
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
@@ -28,7 +28,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  GlobalKey<FormState> _formController = GlobalKey<FormState>();
+  final GlobalKey<FormState> _formController = GlobalKey<FormState>();
   TextEditingController weightFieldController = TextEditingController();
   TextEditingController heightFieldController = TextEditingController();
   String _resultText = '';
